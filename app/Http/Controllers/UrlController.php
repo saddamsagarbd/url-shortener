@@ -15,12 +15,16 @@ class UrlController extends Controller
 {
     public function index(){
         try {
+            // DB::enableQueryLog();
             $loggedInUserId = Auth::id();
             $urls = Url::leftJoin("clicks", "clicks.url_id", "=", "urls.id")
                 ->leftJoin("users", "users.id", "=", "clicks.user_id")
                 ->select('urls.*', 'users.id as user_id', DB::raw('SUM(CASE WHEN clicks.user_id = '. $loggedInUserId .' THEN clicks.count ELSE 0 END) as totalCount'))
-                ->groupBy("clicks.user_id", "clicks.url_id")
+                ->groupBy("urls.id","clicks.user_id", "clicks.url_id")
+                ->orderby("urls.id", "asc")
                 ->get();
+            // $queries = DB::getQueryLog();
+            // dd($queries);
             return view('dashboard')->with("urls", $urls);
         } catch (\Throwable $th) {
             //throw $th;

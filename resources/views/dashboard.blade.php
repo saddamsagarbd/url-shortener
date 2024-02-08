@@ -16,7 +16,7 @@
                         <!-- Email Address -->
                         <div>
                             <x-input-label for="long_url" :value="__('Url')" />
-                            <x-text-input id="long_url" class="block mt-1 w-full" type="text" name="long_url" :value="old('long_url')" required autofocus autocomplete="username" />
+                            <x-text-input id="long_url" class="block mt-1 w-full" type="text" name="long_url" :value="old('long_url')" autofocus autocomplete="long_url" />
                             <x-input-error :messages="$errors->get('long_url')" class="mt-2" />
                         </div>
 
