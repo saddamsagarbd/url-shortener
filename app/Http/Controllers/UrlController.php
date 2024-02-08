@@ -8,17 +8,20 @@ use App\Models\Click; // Import the Url model
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class UrlController extends Controller
 {
     public function index(){
         try {
+            $loggedInUserId = Auth::id();
             $urls = Url::leftJoin("clicks", "clicks.url_id", "=", "urls.id")
                 ->leftJoin("users", "users.id", "=", "clicks.user_id")
-                ->select('urls.*', 'users.id as user_id', DB::raw('SUM(clicks.count) as totalCount'))
-                ->groupBy("clicks.user_id", "clicks.url_id",)
+                ->select('urls.*', 'users.id as user_id', DB::raw('SUM(CASE WHEN clicks.user_id = '. $loggedInUserId .' THEN clicks.count ELSE 0 END) as totalCount'))
+                ->groupBy("clicks.user_id", "clicks.url_id")
                 ->get();
-            return view('urls.url-form')->with("urls", $urls);
+            return view('dashboard')->with("urls", $urls);
         } catch (\Throwable $th) {
             //throw $th;
             echo $th;
@@ -76,5 +79,19 @@ class UrlController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
+
+    public function RedirectShortUrl($shortUrl){
+        $shortUrl = urldecode($shortUrl);
+        // Perform a database lookup to find the corresponding long URL
+        $url = Url::where('short_url', $shortUrl)->first();
+
+        // If the URL is found, redirect to the corresponding long URL
+        if ($url) {
+            return Redirect::away($url->long_url);
+        }
+
+        // If the URL is not found, you can handle the response accordingly (e.g., show a 404 page)
+        abort(404);
     }
 }
