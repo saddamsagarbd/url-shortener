@@ -86,9 +86,10 @@ class UrlController extends Controller
     }
 
     public function RedirectShortUrl($shortUrl){
-        $shortUrl = urldecode($shortUrl);
+        // dd($shortUrl);
+        // $shortUrl = urldecode($shortUrl);
         // Perform a database lookup to find the corresponding long URL
-        $url = Url::where('short_url', $shortUrl)->first();
+        $url = Url::where('id', $shortUrl)->first();
 
         // If the URL is found, redirect to the corresponding long URL
         if ($url) {

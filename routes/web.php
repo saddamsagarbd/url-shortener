@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\UrlController;
 
 /*
@@ -24,12 +25,15 @@ Route::get('/clear-cache', function () {
 });
 
 Route::get('/', function () {
+    // return view('welcome');
     return redirect()->route('login');
 });
 
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/dashboard', [UrlController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/{shortUrl}', [UrlController::class, 'RedirectShortUrl'])->name('redirect');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -38,5 +42,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
 Route::post('/submit-form', [UrlController::class, 'SubmitForm'])->name('submit-form');
 Route::post('/hit-count', [UrlController::class, 'HitCount'])->name('hit-count');
+Route::get('/short-url/{shortUrl}', [UrlController::class, 'RedirectShortUrl'])->name('redirect');

@@ -43,7 +43,8 @@
                                 <td>{{ $url->id }}</td>
                                 <td>{{ $url->long_url }}</td>
                                 <td>
-                                    <a href="{{ route('redirect', ['shortUrl' => urlencode($url->short_url)]) }}">{{ $url->short_url }}</a>
+                                    <!--  -->
+                                    <a href="{{ route('redirect', ['shortUrl' => urlencode($url->id)]) }}">{{ $url->short_url }}</a>
                                 </td>
                                 <td class="text-center">{{ (isset($url->totalCount) && $url->totalCount != NULL) ? $url->totalCount : 0 }}</td>
                                 <td>
