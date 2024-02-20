@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UrlController;
+use App\Models\Task;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,3 +48,36 @@ require __DIR__.'/auth.php';
 Route::post('/submit-form', [UrlController::class, 'SubmitForm'])->name('submit-form');
 Route::post('/hit-count', [UrlController::class, 'HitCount'])->name('hit-count');
 Route::get('/short-url/{shortUrl}', [UrlController::class, 'RedirectShortUrl'])->name('redirect');
+
+Route::get('/tasks', function(){
+    return view('task.index', [
+        'tasks' => Task::latest()->get()
+    ]);
+})->name('task.index');
+
+Route::view('/tasks/create', 'task.create')->name('task.create');
+
+Route::get('/tasks/{id}', function($id){
+    return view('task.show', [
+        'task' => Task::findOrFail($id),
+    ]);
+
+})->name('task.show');
+
+Route::post('/tasks/store', function(Request $request){
+    $data = $request->validate([
+        'title' => 'required|max: 255',
+        'description' => 'required',
+        'long_description' => 'required'
+    ]);
+
+    $task = new Task;
+    $task->title            = $data["title"];
+    $task->description      = $data["description"];
+    $task->long_description = $data["long_description"];
+
+    $task->save();
+
+    return redirect()->route('task.show', ['id' => $task->id])->with("success", "Task created successfully");
+
+})->name('task.store');
